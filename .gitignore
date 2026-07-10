@@ -5,6 +5,7 @@
 *.key
 *.pem
 secrets/
+certs/                 # 域名证书（含私钥）绝不入库，仅放服务器本地
 config/local*.yaml
 config/**/local*.yaml
 

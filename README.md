@@ -37,7 +37,7 @@
 ├── orchestrator/             # 编排器（Python：Agent Loop + 模型路由 + 风格加载 + 进化钩子）
 ├── config/                   # 可版本化配置资产：style-guide / acceptance / model-profiles / team
 ├── infra/
-│   ├── caddy/Caddyfile       # 反代 + 自动 HTTPS（有域名时）
+│   ├── caddy/Caddyfile       # 反代 + HTTPS（使用你提供的证书，非 ACME）
 │   ├── observability/        # prometheus 配置
 │   └── scripts/              # migrate.sh（迁移+初始化）/ backup.sh（自动备份）
 └── data/                     # 运行时状态（git 忽略；迁移闭包之一）
@@ -62,6 +62,35 @@ docker compose up -d --build
 docker compose --profile storage up -d
 docker compose --profile observability up -d
 ```
+
+> 注：Caddyfile 默认监听 `:80` 反代；若未配置证书，Caddy 仅提供 HTTP。
+> 下方第 6 步为可选的 HTTPS 域名接入（需要你自己的证书）。
+
+## 6)（可选）启用 HTTPS 域名
+
+本仓库已为 `xiaozhou.qtechvending.com` 写好 Caddy 域名配置（`infra/caddy/Caddyfile`），
+并使用你提供的证书（**不**走 ACME 自动签发），证书由 `certs/` 目录挂载进容器。
+
+```bash
+# 1) 把证书链与私钥放到仓库 certs/（已在 .gitignore，绝不入库）：
+#      certs/xiaozhou.qtechvending.com_bundle.pem   # 完整链：叶子 + 中间 CA
+#      certs/xiaozhou.qtechvending.com.key          # 私钥
+mkdir -p certs
+#   （把证书文件复制进来；不要提交到 git）
+
+# 2) 在 DNS 把域名 A 记录指向本机公网 IP
+#      xiaozhou.qtechvending.com  →  <服务器公网IP>
+
+# 3) 重新拉起（caddy 会加载证书并监听 443）
+docker compose up -d
+
+# 4) 验证
+curl -I https://xiaozhou.qtechvending.com
+#   → HTTP/2 200 即成功；浏览器访问该域名即走 HTTPS
+```
+
+安全要点：私钥只存在于服务器本地 `certs/`（git 忽略），绝不进入镜像或仓库；
+迁移时 `certs/` 随 `/data` 一并备份，属于“迁移闭包”之外需单独保全的机密资产。
 
 点控制台首页「✨ 一句话生成站点」会经 Caddy 调 `orchestrator /api/build`，
 在 `data/projects/<taskId>/manifest.json` 落一个交付占位，验证“描述→开发→交付”闭环。
