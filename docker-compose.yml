@@ -113,12 +113,12 @@ services:
     mem_limit: 512m
     cpus: 0.5
 
-  # ---- 可选：可观测性（--profile observability，方案第十七章）----
+  # ---- 可观测性栈（Loki/Prometheus/Grafana）----
   loki:
     image: grafana/loki:latest
-    profiles: ["observability"]
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
+      - ./infra/observability/loki-config.yaml:/etc/loki/local-config.yaml:ro
       - ./data/loki:/loki
     networks: [appnet]
     restart: unless-stopped
@@ -127,7 +127,6 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    profiles: ["observability"]
     volumes:
       - ./infra/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./data/prometheus:/prometheus
@@ -140,12 +139,15 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    profiles: ["observability"]
     env_file: .env
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
     ports:
       - "3000:3000"
+    volumes:
+      - ./infra/observability/grafana-dashboard.json:/etc/grafana/provisioning/dashboards/default.json:ro
+      - ./data/grafana:/var/lib/grafana
     depends_on: [loki, prometheus]
     networks: [appnet]
     restart: unless-stopped
