@@ -2,9 +2,8 @@
     admin off
 }
 
-# 主站配置
-{{ if .Env.CADDY_DOMAIN }}
-{{ .Env.CADDY_DOMAIN }} {
+# HTTP 端口 80
+:80 {
     encode gzip zstd
     
     # 安全头
@@ -35,32 +34,7 @@
             header_up X-Forwarded-Proto {scheme}
         }
     }
-    
-    # HTTPS（使用 Let's Encrypt 自动证书）
-    tls {
-        protocols TLSv1.2 TLSv1.3
-    }
 }
-{{ else }}
-# 无域名时使用 HTTP
-:80 {
-    encode gzip zstd
-    
-    handle /api/* {
-        reverse_proxy orchestrator:8001 {
-            header_up Host {upstream_hostport}
-            header_up X-Real-IP {remote_host}
-        }
-    }
-    
-    handle /* {
-        reverse_proxy console:8000 {
-            header_up Host {upstream_hostport}
-            header_up X-Real-IP {remote_host}
-        }
-    }
-}
-{{ end }}
 
 # Grafana（observability profile）
 grafana.xiaozhou.dev {
