@@ -14,6 +14,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List, Optional
 from pydantic import BaseModel, Field
 
 from agent_loop import AgentLoop
