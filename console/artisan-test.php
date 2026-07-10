@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
+// 加载 Laravel 应用
+$app = require_once __DIR__ . '/bootstrap/app.php';
+
 use App\Models\Project;
 
 $project = Project::find(1);
