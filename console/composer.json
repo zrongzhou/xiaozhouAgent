@@ -4,7 +4,7 @@
     "description": "xiaozhouAgent Web 控制台（Laravel + Livewire + FluxUI 就绪）",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^12.0",
         "livewire/livewire": "^3.0"
     },
     "require-dev": {
@@ -22,11 +22,6 @@
     "config": {
         "optimize-autoloader": true,
         "allow-plugins": {}
-    },
-    "policy": {
-        "advisories": {
-            "block": false
-        }
     },
     "minimum-stability": "stable",
     "prefer-stable": true

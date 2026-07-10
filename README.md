@@ -33,7 +33,7 @@
 .
 ├── docker-compose.yml        # 编排（core 默认启；storage/observability 走 profile）
 ├── .env.example              # 环境变量样例（复制为 .env 并填密钥，.env 不入库）
-├── console/                  # Web 控制台（Laravel 11 骨架 + 高级感落地页）
+├── console/                  # Web 控制台（Laravel 12 骨架 + 高级感落地页）
 ├── orchestrator/             # 编排器（Python：Agent Loop + 模型路由 + 风格加载 + 进化钩子）
 ├── config/                   # 可版本化配置资产：style-guide / acceptance / model-profiles / team
 ├── infra/
