@@ -62,7 +62,7 @@ class ProjectController extends Controller
             'roles' => [
                 ['slug' => 'product', 'name' => '产品经理', 'model_profile' => 'brain'],
                 ['slug' => 'design', 'name' => '设计师', 'model_profile' => 'brain'],
-                ['slug' => 'dev', 'name' '开发工程师', 'model_profile' => 'brain'],
+                ['slug' => 'dev', 'name' => '开发工程师', 'model_profile' => 'brain'],
                 ['slug' => 'qa', 'name' => '测试工程师', 'model_profile' => 'light'],
                 ['slug' => 'ops', 'name' => '运维工程师', 'model_profile' => 'light'],
             ],
