@@ -34,7 +34,9 @@ services:
     volumes:
       # 注意：不要把 ./console 再挂载到 /var/www，否则会遮住镜像内 composer install 生成的 vendor/
       - ./.env:/var/www/.env
-      - ./data/console-storage:/var/www/storage
+      # 用命名卷而非绑定挂载：命名卷首次会从镜像复制 storage/ 子目录
+      # （framework/views 等），绑定挂载会用空主机目录遮住它们导致 Blade 编译失败
+      - console_storage:/var/www/storage
     depends_on:
       postgres:
         condition: service_healthy
@@ -153,6 +155,7 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  console_storage:
 
 networks:
   appnet:
