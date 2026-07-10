@@ -1,0 +1,86 @@
+# Laravel
+vendor/
+node_modules/
+npm-debug.log
+yarn-error.log
+.env
+.env.*
+!.env.example
+
+# Build
+build/
+public/storage/
+public/hot
+storage/*.key
+storage/framework/
+storage/logs/
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+.env.docker
+
+# Config (sensitive)
+config/*.pem
+config/*.key
+certs/
+
+# Data
+data/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# IDE - Python
+.pytest_cache/
+.coverage
+htmlcov/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Document backups
+*.swp
+*.swo
+*~
+
+# PHP Storm
+.idea/
+*.phpstorm*
+
+# VS Code
+.vscode/
+
+# Sublime Text
+Sublime Text 3/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup

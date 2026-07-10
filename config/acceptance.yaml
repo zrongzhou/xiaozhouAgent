@@ -1,0 +1,57 @@
+# =====================================================================
+# 验收基准（方案第十三/十七章：自主验收 + 视觉比对方法学）
+# Agent 完成开发后对照本文件自动验收；不达标回到规划/实现迭代。
+# 视觉比对采用“分层打分”，参考图是目标而非像素模板（避免误杀）。
+# =====================================================================
+version: 1
+
+# ---- 构建 / 测试门禁 ----
+build:
+  install: true
+  typecheck: true
+  lint: false            # 骨架阶段可放宽，后续开启
+  unit: true
+
+# ---- 浏览器走查 E2E（browser-use）----
+e2e:
+  enabled: true
+  critical_paths:        # 关键路径必须走通
+    - "/"
+    - "/login"
+    - "/projects"
+  headless: true
+
+# ---- 视觉比对（分层打分，加权总分 < pass_score 则返工）----
+visual:
+  enabled: true
+  reference_dir: "/config/acceptance/references"   # 你的参考截图放这里（桌面/移动）
+  weights:
+    dom_structure: 0.30      # 结构语义相似度
+    layout_iou: 0.25         # 布局 IoU
+    visual_clip: 0.35        # CLIP embedding 余弦相似（容忍合理差异）
+    interaction_e2e: 0.10    # 交互走查通过率
+  pass_score: 0.82           # 低于此分自动返工
+  tolerances:
+    color_delta_euclid: 24   # 颜色允许偏差
+    allow_content_text_diff: true
+
+# ---- 性能 / 响应式 / 无障碍 ----
+performance:
+  lcp_ms: 1500             # 首屏 < 1.5s
+  tbt_ms: 300
+  bundle_js_kb: 400
+
+responsive:
+  breakpoints: [375, 768, 1280]
+  require_no_horizontal_overflow: true
+
+a11y:
+  standard: "WCAG 2.1 AA"
+  require_alt_text: true
+  require_focus_visible: true
+  require_contrast_aa: true
+
+# ---- 主题（强制 light/dark/system 三态切换）----
+theme:
+  require_toggle: true
+  require_smooth_transition: true

@@ -1,0 +1,52 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# 告警规则文件
+rule_files:
+  - "alert.rules.yml"
+
+# 采集配置
+scrape_configs:
+  # Prometheus 自身
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    
+  # 编排器指标
+  - job_name: 'orchestrator'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['orchestrator:8001']
+    
+  # Laravel 指标（如果启用）
+  - job_name: 'laravel'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['console:8000']
+    
+  # PostgreSQL
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:9187']
+    
+  # Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:9121']
+    
+  # 系统指标
+  - job_name: 'node'
+    static_configs:
+      - targets: ['host.docker.internal:9100']
+    metrics_path: '/metrics'
+    scheme: http
+    
+  # MinIO（storage profile）
+  - job_name: 'minio'
+    static_configs:
+      - targets: ['minio:9000']
+    metrics_path: '/minio/v2/metrics/cluster'
+    basic_auth:
+      username: '{{ .Env.MINIO_ROOT_USER }}'
+      password: '{{ .Env.MINIO_ROOT_PASSWORD }}'

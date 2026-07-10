@@ -1,0 +1,79 @@
+# =====================================================================
+# 设计系统（方案第十九章：风格引导 Style Bootstrapping）
+# 这是“训练 AI 按你的风格开发”的核心资产之一。前期与 AI 共建，
+# 之后每次构建自动加载本文件作为上下文。支持 light/dark（强制）。
+# =====================================================================
+version: 1
+name: xiaozhou-default
+
+colors:
+  light:
+    bg: "#F7F8FA"
+    surface: "#FFFFFF"
+    text: "#0F172A"
+    text-muted: "#475569"
+    primary: "#4F46E5"      # 主品牌色（靛蓝）
+    primary-foreground: "#FFFFFF"
+    accent: "#06B6D4"
+    border: "#E2E8F0"
+    glass: "rgba(255,255,255,0.6)"
+  dark:
+    bg: "#0B1020"
+    surface: "#121A2E"
+    text: "#E2E8F0"
+    text-muted: "#94A3B8"
+    primary: "#818CF8"
+    primary-foreground: "#0B1020"
+    accent: "#22D3EE"
+    border: "#1E293B"
+    glass: "rgba(255,255,255,0.06)"
+
+typography:
+  font-sans: "'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif"
+  font-display: "'Sora', 'Inter', sans-serif"
+  scale:                 # 精致排版阶梯
+    xs: "0.75rem"
+    sm: "0.875rem"
+    base: "1rem"
+    lg: "1.125rem"
+    xl: "1.375rem"
+    "2xl": "1.75rem"
+    "3xl": "2.25rem"
+    "4xl": "3rem"
+  weight: { regular: 400, medium: 500, semibold: 600, bold: 700 }
+
+spacing:
+  base: 8
+  section-y: 96
+  container-max: 1200
+
+radius:
+  sm: 8
+  md: 14
+  lg: 20
+  xl: 28
+  pill: 999
+
+shadow:
+  soft: "0 10px 30px -12px rgba(15,23,42,0.18)"
+  glow: "0 0 0 1px rgba(79,70,229,0.18), 0 20px 50px -20px rgba(79,70,229,0.45)"
+
+effects:
+  glass-morphism: true
+  magnetic-hover: true
+  theme-transition: "color .3s ease, background-color .3s ease, border-color .3s ease"
+  motion-curve: "cubic-bezier(0.16, 1, 0.3, 1)"   # 高级感缓动
+  reduce-motion: respect                                       # 遵守 prefers-reduced-motion
+
+components:
+  - button-primary      # 磁吸主按钮
+  - card-glass          # 玻璃拟态卡片
+  - nav-sticky-blur     # 毛玻璃吸顶导航
+  - hero-centered
+  - pricing-grid
+  - footer-minimal
+
+forbidden:               # 反模式，验收会扣分
+  - "纯默认 Bootstrap 观感"
+  - "刺眼高饱和纯色块"
+  - "无间距堆叠"

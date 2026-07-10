@@ -1,0 +1,60 @@
+# =====================================================================
+# 专家团队定义（方案第十六章：多角色 Agent 协作）
+# 每个角色 = 技能 + 模型画像 + 独立上下文 + 记忆切片。
+# 协作拓扑：Team Lead 派活 → 产品→设计→开发→测试→运维（关键节点评审闸门）。
+# =====================================================================
+version: 1
+
+team_lead:
+  name: Team Lead
+  desc: 编排器升级体，负责拆解任务、派活、仲裁冲突、触发验收
+  model: commercial-main
+  skills: [planning, orchestration]
+
+roles:
+  - id: product
+    name: 产品经理
+    desc: 需求澄清、PRD、用户故事、验收标准
+    model: light-open
+    skills: [requirements, prd]
+    handoff: design-spec        # 产出契约（结构化）
+
+  - id: design
+    name: 设计师
+    desc: 视觉设计、组件、动效、参考图比对
+    model: commercial-main
+    skills: [frontend-dev, ui]
+    handoff: design-spec
+
+  - id: developer
+    name: 开发工程师
+    desc: 前端(Vite+Tailwind) + 后端(Laravel+Livewire)
+    model: commercial-main
+    skills: [frontend-dev, fullstack-dev]
+    handoff: code
+
+  - id: qa
+    name: 测试工程师
+    desc: 构建/E2E/视觉比对/性能/无障碍验收
+    model: light-open
+    skills: [browser-use, testing]
+    handoff: qa-report
+
+  - id: ops
+    name: 运维
+    desc: 容器编排、部署、备份、监控（方案第十四/十五/十七章）
+    model: light-open
+    skills: [deploy, observability]
+    handoff: deploy
+
+# 协作机制
+blackboard:
+  type: shared            # /data 项目目录 + Redis pub/sub
+  store: redis
+  artifacts_dir: /data/projects
+
+topology: pipeline        # pipeline + 并行（设计定稿后前后端并行）+ 辩论仲裁
+review_gates: [design-done, dev-done, qa-done]
+
+human_in_the_loop:
+  enabled: true           # 控制台可认领任一角色，其余由 Agent 填充
