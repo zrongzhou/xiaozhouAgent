@@ -1,0 +1,157 @@
+# =====================================================================
+# xiaozhouAgent — 单机部署编排（方案第十四/十八章）
+# 默认 `docker compose up -d` 仅启动核心链路（core）：
+#   caddy · console(Laravel) · orchestrator(Python) · postgres · redis
+# 按需追加：
+#   --profile storage       → minio（对象存储）
+#   --profile observability → loki/prometheus/grafana/tempo
+# 资源上限按 2C4G/60G 轻量云调校；升级到 4C8G 后可放宽。
+# =====================================================================
+services:
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - console
+      - orchestrator
+    networks: [appnet]
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.25
+
+  console:
+    build: ./console
+    env_file: .env
+    environment:
+      - APP_URL=http://${APP_URL_HOST:-localhost}
+    volumes:
+      - ./console:/var/www
+      - ./.env:/var/www/.env
+      - ./data/console-storage:/var/www/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks: [appnet]
+    restart: unless-stopped
+    mem_limit: 768m
+    cpus: 1.0
+
+  orchestrator:
+    build: ./orchestrator
+    env_file: .env
+    volumes:
+      - ./orchestrator:/app
+      - ./config:/config:ro
+      - ./data/projects:/data/projects
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks: [appnet]
+    restart: unless-stopped
+    mem_limit: 768m
+    cpus: 1.0
+
+  postgres:
+    image: postgres:16-alpine
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [appnet]
+    restart: unless-stopped
+    mem_limit: 768m
+    cpus: 1.0
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--save", "60", "1"]
+    volumes:
+      - ./data/redis:/data
+    networks: [appnet]
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.25
+
+  # ---- 可选：对象存储（--profile storage）----
+  minio:
+    image: minio/minio:latest
+    profiles: ["storage"]
+    command: server /data --console-address ":9001"
+    env_file: .env
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./data/minio:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks: [appnet]
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 0.5
+
+  # ---- 可选：可观测性（--profile observability，方案第十七章）----
+  loki:
+    image: grafana/loki:latest
+    profiles: ["observability"]
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./data/loki:/loki
+    networks: [appnet]
+    restart: unless-stopped
+    mem_limit: 768m
+    cpus: 0.5
+
+  prometheus:
+    image: prom/prometheus:latest
+    profiles: ["observability"]
+    volumes:
+      - ./infra/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./data/prometheus:/prometheus
+    ports:
+      - "9090:9090"
+    networks: [appnet]
+    restart: unless-stopped
+    mem_limit: 768m
+    cpus: 0.5
+
+  grafana:
+    image: grafana/grafana:latest
+    profiles: ["observability"]
+    env_file: .env
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+    ports:
+      - "3000:3000"
+    depends_on: [loki, prometheus]
+    networks: [appnet]
+    restart: unless-stopped
+    mem_limit: 768m
+    cpus: 0.5
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  appnet:
+    driver: bridge

@@ -1,0 +1,36 @@
+# ===== Secrets（绝不提交）=====
+.env
+.env.*
+*.key
+*.pem
+secrets/
+config/local*.yaml
+config/**/local*.yaml
+
+# ===== Build / deps =====
+vendor/
+node_modules/
+composer.lock  # 由 CI/构建期生成；如需锁版本可取消注释
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# ===== Laravel runtime =====
+console/storage/*.key
+console/storage/logs/*
+console/storage/framework/cache/data/*
+console/storage/framework/sessions/*
+console/storage/framework/views/*
+console/bootstrap/cache/*.php
+console/public/storage
+
+# ===== Data（迁移闭包，本地不提交）=====
+data/
+
+# ===== Editor / OS =====
+.idea/
+.vscode/
+.DS_Store
+*.log
+.thumbs.db

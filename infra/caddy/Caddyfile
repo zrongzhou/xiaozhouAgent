@@ -1,0 +1,18 @@
+{
+    admin off
+    auto_https off
+}
+
+# 裸 IP 下用 HTTP(:80) 即可验证；有域名时在 .env 设 CADDY_DOMAIN
+# 并将下方 :80 改为 {$CADDY_DOMAIN} 即可自动签发 HTTPS（方案 18.2）。
+:80 {
+    encode gzip
+
+    # 编排器 API（方案第十五章解耦：控制台只发任务，Loop 在 orchestrator）
+    handle_path /api/* {
+        reverse_proxy orchestrator:8001
+    }
+
+    # Web 控制台（Laravel/Livewire/FluxUI）
+    reverse_proxy console:8000
+}

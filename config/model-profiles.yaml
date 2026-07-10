@@ -1,0 +1,65 @@
+# =====================================================================
+# 模型画像与路由规则（方案第十/十一章：混合 + 手工指定 + 进化池）
+# 系统默认走路由器；每个项目/任务可在控制台手工覆盖（model_override）。
+# 自托管权重用于“权重进化”（需 GPU）；纯 API 阶段只用语商业 API 即可。
+# =====================================================================
+version: 1
+
+# 默认主脑（复杂编码）
+default:
+  provider: "${DEFAULT_MODEL_PROVIDER}"
+  model: "${DEFAULT_MODEL}"
+  base_url: "${DEFAULT_MODEL_BASE_URL}"
+  api_key: "${DEFAULT_MODEL_API_KEY}"
+
+# 模型种群（进化池，方案第十一章）。纯 API 阶段只启用 commercial 一档。
+pool:
+  - id: commercial-main
+    tier: main
+    provider: "${DEFAULT_MODEL_PROVIDER}"
+    model: "${DEFAULT_MODEL}"
+    base_url: "${DEFAULT_MODEL_BASE_URL}"
+    api_key: "${DEFAULT_MODEL_API_KEY}"
+    use_for: [planning, coding, review]
+    cost_tier: high
+    quality: 0.95
+
+  - id: light-open
+    tier: light
+    provider: "${LIGHT_MODEL_PROVIDER}"
+    model: "${LIGHT_MODEL}"
+    base_url: "${LIGHT_MODEL_BASE_URL}"
+    api_key: "${LIGHT_MODEL_API_KEY}"
+    use_for: [routing, formatting, classification]
+    cost_tier: low
+    quality: 0.7
+    requires_gpu: true        # 自托管时才启用
+
+# 路由器规则：按任务类型派模型，主模型失败自动降级到 fallback
+router:
+  rules:
+    - task: [plan, design, code, review]
+      model: commercial-main
+      fallback: light-open
+    - task: [route, format, classify]
+      model: light-open
+      fallback: commercial-main
+
+# 手工指定示例（控制台 UI 可覆盖；此处为模板）
+# model_override:
+#   project: demo-saas
+#   tasks:
+#     coding: glm-4-plus
+#     formatting: qwen2.5-coder-7b
+#   team_roles:        # 方案第十六章：按角色指定模型
+#     product: light-open
+#     design: commercial-main
+#     developer: commercial-main
+#     qa: light-open
+
+# 进化（方案第十一章）：验收通过的交付作为训练信号
+evolution:
+  enabled: false            # 纯 API 阶段关闭；上 7B 进化池后开启
+  strategy: qlora
+  keep_top_k: 3
+  cadence: weekly
