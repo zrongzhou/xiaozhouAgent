@@ -2,9 +2,12 @@
     admin off
 }
 
-# HTTP 端口 80
-:80 {
+# HTTP 端口 80 - 域名访问
+xiaozhou.qtechvending.com {
     encode gzip zstd
+    
+    # HTTPS 证书
+    tls /certs/xiaozhou.qtechvending.com_bundle.crt /certs/xiaozhou.qtechvending.com.key
     
     # 安全头
     header {Request-Context} ""
@@ -28,12 +31,29 @@
     # Web 控制台 - Laravel
     handle /* {
         reverse_proxy console:8000 {
-            header_up Host {upstream_hostport}
+            header_up Host {host}
             header_up X-Real-IP {remote_host}
             header_up X-Forwarded-For {remote_host}
             header_up X-Forwarded-Proto {scheme}
         }
     }
+}
+
+# HTTP 端口 80 - IP 直接访问
+:80 {
+    encode gzip zstd
+    
+    # 安全头
+    header {Request-Context} ""
+    header -Server
+    
+    # 重定向到 HTTPS 域名
+    redir https://xiaozhou.qtechvending.com{uri} 301
+}
+
+# HTTPS 端口 443 - 通用
+:443 {
+    encode gzip zstd
 }
 
 # Grafana（observability profile）
