@@ -8,7 +8,8 @@ xiaozhou.qtechvending.com {
     encode gzip
 
     # 编排器 API（控制台只发任务，Loop 在 orchestrator）
-    handle_path /api/* {
+    # 注意：用 handle（保留 /api 前缀），不要用 handle_path（会剥离前缀导致 404）
+    handle /api/* {
         reverse_proxy orchestrator:8001
     }
 
