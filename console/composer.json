@@ -23,6 +23,11 @@
         "optimize-autoloader": true,
         "allow-plugins": {}
     },
+    "policy": {
+        "advisories": {
+            "block": false
+        }
+    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }
