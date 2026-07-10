@@ -91,7 +91,7 @@
                     @forelse($project->tasks as $task)
                         <div class="flex items-center justify-between p-4 bg-white/5 rounded-lg transition-premium hover:bg-white/10">
                             <div class="flex items-center space-x-4">
-                                <div class="w-8 h-8 bg-{{ $task->type === 'code' ? 'blue' : $task->type === 'design' ? 'purple' : 'gray' }}-600 rounded-lg flex items-center justify-center">
+                                <div class="w-8 h-8 bg-{{ $task->type === 'code' ? 'blue' : ($task->type === 'design' ? 'purple' : 'gray') }}-600 rounded-lg flex items-center justify-center">
                                     <span>{{ strtoupper($task->type[0]) }}</span>
                                 </div>
                                 <div>
