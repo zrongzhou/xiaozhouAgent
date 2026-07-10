@@ -1,172 +1,130 @@
-# xiaozhouAgent 项目开发概览
+# xiaozhouAgent 项目开发进度报告
 
 ## 项目概述
 
-**xiaozhouAgent** 是一个 AI 驱动的智能开发平台，用户只需提供自然语言描述，AI Agent 就能自动完成从需求分析到代码生成、测试、部署的全流程开发工作。
+**xiaozhouAgent** 是一个自然语言驱动的智能开发平台，通过 AI Agent 自主完成从需求分析到代码部署的全流程开发工作。
 
 ## 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| 前端 | Laravel + Livewire + Tailwind CSS |
-| 后端 | Python FastAPI |
-| 数据库 | PostgreSQL 16 |
-| 缓存/队列 | Redis 7 |
-| 反向代理 | Caddy 2 |
-| 对象存储 | MinIO (可选) |
-| 可观测性 | Loki + Prometheus + Grafana + Tempo (可选) |
+| 组件 | 技术 | 版本 |
+|------|------|------|
+| Web 控制台 | Laravel + Livewire + Tailwind CSS | Laravel 12 |
+| 编排器 | Python FastAPI | FastAPI 0.115 |
+| 数据库 | PostgreSQL | 16 |
+| 缓存/队列 | Redis | 7 |
+| 反向代理 | Caddy | 2 |
+| 容器化 | Docker Compose | - |
 
 ## 已完成功能
 
-### 1. Laravel Web 控制台
-- ✅ 项目管理（CRUD）
-- ✅ 任务管理（按类型/状态）
-- ✅ 模型画像管理
-- ✅ 仪表盘统计
-- ✅ API 接口
-- ✅ 数据库迁移
+### 1. Laravel 控制台
 
-**核心模型：**
-- Project（项目）
-- Task（任务）
-- Artifact（产物）
-- ModelProfile（模型画像）
-- ModelRecord（模型调用记录）
-- AcceptanceReport（验收报告）
-- Team（团队）
-- User（用户）
+- ✅ 项目管理（创建、编辑、删除、启动、暂停）
+- ✅ 任务管理（查看、重试、状态更新）
+- ✅ 模型画像管理
+- ✅ 仪表盘（项目统计、任务统计）
+- ✅ Premium 玻璃态设计风格
+- ✅ 响应式布局
 
 ### 2. Python 编排器
-- ✅ Agent Loop 状态机
-- ✅ 任务调度与队列监听
-- ✅ 模型路由器
-- ✅ 风格加载器
-- ✅ 能力进化引擎
-- ✅ FastAPI REST API
 
-**核心功能：**
-- Plan → Act → Observe → Iterate 循环
-- 多角色协作（产品/设计/开发/测试/运维）
-- 模型自动选择与回退
-- 运行统计与成本追踪
+- ✅ Agent Loop（Plan → Act → Observe → Iterate）
+- ✅ 模型路由器（多模型选择、回退机制）
+- ✅ 风格加载器（设计系统配置）
+- ✅ 能力进化引擎（运行统计、优化建议）
+- ✅ FastAPI REST API
+- ✅ Redis 队列监听
 
 ### 3. 基础设施
+
 - ✅ Docker Compose 编排
 - ✅ Caddy 反向代理配置
-- ✅ Prometheus 指标采集配置
-- ✅ 自动备份脚本
 - ✅ 数据库迁移脚本
-- ✅ 一键部署脚本
+- ✅ 环境变量配置
 
-### 4. 配置文件
-- ✅ model-profiles.yaml（模型画像与路由）
-- ✅ style-guide.yaml（风格引导）
-- ✅ team.yaml（专家团队定义）
-- ✅ acceptance.yaml（验收基准）
-
-### 5. 文档
-- ✅ DEPLOY.md（完整部署指南）
-- ✅ scripts/deploy.sh（部署脚本）
-- ✅ scripts/test-local.sh（本地测试）
-
-## 项目结构
+## 数据库表结构
 
 ```
-xiaozhouAgent/
-├── console/                 # Laravel Web 控制台
-│   ├── app/
-│   │   ├── Http/
-│   │   │   ├── Controllers/   # 控制器
-│   │   │   ├── Resources/     # API 资源
-│   │   │   └── Controllers/Api/  # API 控制器
-│   │   └── Models/          # Eloquent 模型
-│   ├── database/
-│   │   ├── migrations/      # 数据库迁移
-│   │   └── seeders/         # 数据填充
-│   ├── routes/              # 路由定义
-│   └── resources/views/     # Blade 视图
-├── orchestrator/            # Python 编排器
-│   ├── agent_loop.py        # Agent 循环
-│   ├── model_router.py      # 模型路由器
-│   ├── style_loader.py      # 风格加载器
-│   ├── capability_evolver.py # 能力进化
-│   ├── main.py              # FastAPI 入口
-│   └── requirements.txt     # Python 依赖
-├── infra/                   # 基础设施
-│   ├── caddy/               # Caddy 配置
-│   ├── observability/      # 可观测栈配置
-│   └── scripts/            # 运维脚本
-├── config/                 # 系统配置
-│   ├── model-profiles.yaml
-│   ├── style-guide.yaml
-│   ├── team.yaml
-│   └── acceptance.yaml
-├── scripts/                # 工具脚本
-│   ├── deploy.sh           # 部署脚本
-│   └── test-local.sh       # 本地测试
-├── docker-compose.yml      # Docker 编排
-├── .env.example            # 环境变量示例
-└── DEPLOY.md               # 部署指南
+acceptance_reports  - 验收报告表
+artifacts           - 产物表
+backup_records      - 备份记录表
+migrations          - 迁移记录表
+model_profiles      - 模型画像表
+model_records       - 模型记录表
+projects            - 项目表
+tasks               - 任务表
+teams               - 团队表
+users               - 用户表
 ```
 
-## 快速开始
+## 服务器部署状态
 
-### 1. 克隆仓库
+**服务器**: 43.152.232.197
+**状态**: ✅ 所有服务运行正常
 
-```bash
-git clone https://github.com/zrongzhou/xiaozhouAgent.git
-cd xiaozhouAgent
+| 服务 | 状态 | 端口 |
+|------|------|------|
+| caddy | running | 80/443 |
+| console | running | 8000 |
+| orchestrator | running | 8001 |
+| postgres | running (healthy) | 5432 |
+| redis | running | 6379 |
+
+## 访问地址
+
+- **Web 控制台**: http://43.152.232.197
+- **编排器 API**: http://43.152.232.197:8001
+
+## API 端点
+
+### 编排器 API
+
+```
+GET  /health                    健康检查
+GET  /metrics                   Prometheus 指标
+POST /api/build                 提交自主开发任务
+GET  /api/build/{task_id}       查询任务状态
+POST /api/project/start         启动项目
+GET  /api/tasks                 获取所有任务
+GET  /api/models/stats          模型使用统计
+GET  /api/styles/presets        风格预设列表
 ```
 
-### 2. 配置环境
+### Laravel 路由
 
-```bash
-cp .env.example .env
-# 编辑 .env 填入必要配置
+```
+GET|HEAD  /                    首页
+GET|HEAD  /dashboard            仪表盘
+GET|HEAD  /projects             项目列表
+POST      /projects             创建项目
+GET       /projects/create      创建项目表单
+GET       /projects/{project}   项目详情
+POST      /projects/{project}   更新项目
+DELETE    /projects/{project}   删除项目
+POST      /projects/{project}/start   启动项目
+POST      /projects/{project}/pause   暂停项目
 ```
 
-### 3. 启动服务
+## 已修复问题
 
-```bash
-# 启动核心服务
-docker compose up -d
+1. **三元运算符语法错误** - `show.blade.php` 中添加括号明确优先级
+2. **编排器 List/Optional 导入缺失** - 添加 typing 导入
+3. **数据库连接问题** - 修复 .env 配置和 bootstrap 加载
+4. **团队创建测试** - 成功创建测试团队
 
-# 启动可观测栈（可选）
-docker compose --profile observability up -d
-```
+## 下一步计划
 
-### 4. 执行迁移
+1. 完善可观测性栈（Loki/Prometheus/Grafana）
+2. 添加更多模型画像配置
+3. 完善风格预设系统
+4. 添加用户认证和权限管理
+5. 优化 Agent Loop 算法
 
-```bash
-bash infra/scripts/migrate.sh
-```
+## 代码仓库
 
-### 5. 访问应用
+- **GitHub**: https://github.com/zrongzhou/xiaozhouAgent
+- **分支**: master
 
-- 控制台: http://localhost
-- API: http://localhost/api/v1/health
+## 更新日志
 
-## 部署信息
-
-- **服务器 IP**: 43.152.232.197
-- **用户**: ubuntu
-- **项目路径**: /opt/xiaozhou
-
-## 下一步
-
-1. **集成真实 LLM API**
-   - 配置 API Key
-   - 实现模型调用逻辑
-
-2. **完善前端 UI**
-   - 添加 Livewire 组件
-   - 实现实时更新
-
-3. **实现验收流程**
-   - 视觉比对
-   - 性能测试
-   - E2E 测试
-
-4. **优化可观测性**
-   - 完善 Grafana 看板
-   - 配置告警规则
+- 2026-07-10: 初始版本发布，完成核心功能开发和服务器部署
