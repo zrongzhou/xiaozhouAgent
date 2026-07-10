@@ -32,7 +32,7 @@ services:
     environment:
       - APP_URL=http://${APP_URL_HOST:-localhost}
     volumes:
-      - ./console:/var/www
+      # 注意：不要把 ./console 再挂载到 /var/www，否则会遮住镜像内 composer install 生成的 vendor/
       - ./.env:/var/www/.env
       - ./data/console-storage:/var/www/storage
     depends_on:
@@ -49,7 +49,7 @@ services:
     build: ./orchestrator
     env_file: .env
     volumes:
-      - ./orchestrator:/app
+      # 注意：不要把 ./orchestrator 再挂载到 /app，否则会遮住镜像内 pip install 生成的依赖
       - ./config:/config:ro
       - ./data/projects:/data/projects
     depends_on:
