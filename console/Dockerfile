@@ -19,7 +19,8 @@ RUN cp -n vendor/laravel/framework/config/*.php config/ 2>/dev/null || true
 # 创建运行时 storage 目录并赋权（artisan serve / 视图编译 / 日志需要）
 RUN mkdir -p storage/framework/cache/data storage/framework/sessions \
         storage/framework/views storage/framework/testing storage/logs storage/app/public \
-    && chmod -R 777 storage
+        bootstrap/cache \
+    && chmod -R 777 storage bootstrap/cache
 
 EXPOSE 8000
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
